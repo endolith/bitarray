@@ -7,77 +7,12 @@
    Author: Ilan Schnell
 */
 
-#define PY_SSIZE_T_CLEAN
-#include "Python.h"
+#include "bitarray.h"
 
-#if PY_MAJOR_VERSION >= 3
-#define IS_PY3K
-#endif
-
-#ifdef STDC_HEADERS
-#include <stddef.h>
-#else  /* !STDC_HEADERS */
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>      /* For size_t */
-#endif /* HAVE_SYS_TYPES_H */
-#endif /* !STDC_HEADERS */
-
-
-typedef long long int idx_t;
-
-typedef struct {
-    PyObject_VAR_HEAD
-    char *ob_item;
-    Py_ssize_t allocated;       /* how many bytes allocated */
-    idx_t nbits;                /* length of bitarray, i.e. elements */
-    int endian;                 /* bit endianness of bitarray */
-    int ob_exports;             /* how many buffer exports */
-    PyObject *weakreflist;      /* list of weak references */
-} bitarrayobject;
-
-#define BITS(bytes)  ((idx_t) (bytes) << 3)
-
-#define BYTES(bits)  (((bits) == 0) ? 0 : (((bits) - 1) / 8 + 1))
-
-#define BITMASK(endian, i)  (((char) 1) << ((endian) ? (7 - (i)%8) : (i)%8))
-
-/* ------------ low level access to bits in bitarrayobject ------------- */
-
-#ifndef NDEBUG
-static int GETBIT(bitarrayobject *self, idx_t i) {
-    assert(0 <= i && i < self->nbits);
-    return ((self)->ob_item[(i) / 8] & BITMASK((self)->endian, i) ? 1 : 0);
-}
-#else
-#define GETBIT(self, i)  \
-    ((self)->ob_item[(i) / 8] & BITMASK((self)->endian, i) ? 1 : 0)
-#endif
-
-static void
-setbit(bitarrayobject *self, idx_t i, int bit)
-{
-    char *cp, mask;
-
-    assert(0 <= i && i < BITS(Py_SIZE(self)));
-    mask = BITMASK(self->endian, i);
-    cp = self->ob_item + i / 8;
-    if (bit)
-        *cp |= mask;
-    else
-        *cp &= ~mask;
-}
 
 /* set using the Python module function _set_babt() */
 static PyObject *bitarray_basetype = NULL;
 
-/* return 1 if obj is a bitarray, 0 otherwise */
-static int
-bitarray_Check(PyObject *obj)
-{
-    if (bitarray_basetype == NULL) /* fallback */
-        return PyObject_HasAttrString(obj, "endian");
-    return PyObject_IsInstance(obj, bitarray_basetype);
-}
 
 static void
 setunused(bitarrayobject *a)
