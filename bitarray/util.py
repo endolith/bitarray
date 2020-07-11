@@ -13,17 +13,13 @@ from bitarray import bitarray, bits2bytes, _bitarray, get_default_endian
 
 from bitarray._util import (count_n, rindex,
                             count_and, count_or, count_xor, subset,
-                            _swap_hilo_bytes, _set_babt)
+                            _swap_hilo_bytes)
 
 
 __all__ = ['zeros', 'make_endian', 'rindex', 'strip', 'count_n',
            'count_and', 'count_or', 'count_xor', 'subset',
            'ba2hex', 'hex2ba', 'ba2int', 'int2ba', 'huffman_code']
 
-
-# tell the _util extension what the bitarray base type is, such that it can
-# check for instances thereof when checking for bitarray type
-_set_babt(_bitarray)
 
 _is_py2 = bool(sys.version_info[0] == 2)
 

@@ -10,31 +10,6 @@
 #include "bitarray.h"
 
 
-/* set using the Python module function _set_babt() */
-static PyObject *bitarray_basetype = NULL;
-
-
-static void
-setunused(bitarrayobject *a)
-{
-    const idx_t n = BITS(Py_SIZE(a));
-    idx_t i;
-
-    for (i = a->nbits; i < n; i++)
-        setbit(a, i, 0);
-}
-
-static unsigned char bitcount_lookup[256] = {
-    0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4,1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,
-    1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,
-    1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,
-    2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,3,4,4,5,4,5,5,6,4,5,5,6,5,6,6,7,
-    1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,
-    2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,3,4,4,5,4,5,5,6,4,5,5,6,5,6,6,7,
-    2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6,3,4,4,5,4,5,5,6,4,5,5,6,5,6,6,7,
-    3,4,4,5,4,5,5,6,4,5,5,6,5,6,6,7,4,5,5,6,5,6,6,7,5,6,6,7,6,7,7,8,
-};
-
 /* return the smallest index i for which a.count(1, 0, i) == n, or when
    n exceeds the total count return -1  */
 static idx_t
@@ -316,13 +291,6 @@ efficient since we can stop as soon as one mismatch is found, and no\n\
 intermediate bitarray object gets created.");
 
 
-/* set bitarray_basetype (babt) */
-static PyObject *
-set_babt(PyObject *module, PyObject *obj)
-{
-    bitarray_basetype = obj;
-    Py_RETURN_NONE;
-}
 
 static PyMethodDef module_functions[] = {
     {"count_n",   (PyCFunction) count_n,   METH_VARARGS, count_n_doc},
@@ -331,7 +299,6 @@ static PyMethodDef module_functions[] = {
     {"count_or",  (PyCFunction) count_or,  METH_VARARGS, count_or_doc},
     {"count_xor", (PyCFunction) count_xor, METH_VARARGS, count_xor_doc},
     {"subset",    (PyCFunction) subset,    METH_VARARGS, subset_doc},
-    {"_set_babt", (PyCFunction) set_babt,  METH_O,       ""},
     {NULL,        NULL}  /* sentinel */
 };
 
