@@ -39,7 +39,7 @@ typedef long long int idx_t;
 /* bit endianness */
 #define ENDIAN_LITTLE  0
 #define ENDIAN_BIG     1
-static int default_endian = ENDIAN_BIG;
+int default_endian = ENDIAN_BIG;
 
 /* Unlike the normal convention, ob_size is the byte count, not the number
    of elements.  The reason for doing this is that we can use our own
@@ -55,7 +55,7 @@ typedef struct {
     PyObject *weakreflist;      /* list of weak references */
 } bitarrayobject;
 
-static PyTypeObject Bitarraytype;
+PyTypeObject Bitarraytype;
 
 #define ENDIAN_STR(a)  (((a)->endian == ENDIAN_LITTLE) ? "little" : "big")
 
@@ -70,7 +70,7 @@ static PyTypeObject Bitarraytype;
 /* ------------ low level access to bits in bitarrayobject ------------- */
 
 #ifndef NDEBUG
-static int GETBIT(bitarrayobject *self, idx_t i) {
+int GETBIT(bitarrayobject *self, idx_t i) {
     assert(0 <= i && i < self->nbits);
     return ((self)->ob_item[(i) / 8] & BITMASK((self)->endian, i) ? 1 : 0);
 }
