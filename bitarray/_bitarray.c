@@ -3065,7 +3065,7 @@ PyDoc_STRVAR(bitarraytype_doc,
 Return a new bitarray object.\n\
 ");
 
-static PyTypeObject Bitarraytype = {
+PyTypeObject Bitarraytype = {
 #ifdef IS_PY3K
     PyVarObject_HEAD_INIT(NULL, 0)
 #else
